@@ -1,0 +1,49 @@
+import assign from 'object-assign';
+import * as types from './types';
+// import moment from 'moment';
+<%_
+  if (!template.interfaces) template.interfaces = [];
+_%>
+
+export const defaultState = {
+  tableLoading: false,
+  total: 0,
+  sheetItems: {
+    pageNumber: 1,
+    pageSize: 20
+  },
+  <% template.interfaces.forEach(i => { _%>
+    <%= i.name.replace(/^get/i, '').replace(/^(\w)/, w => w.toLowerCase()) %>: undefined,
+  <% }) %>
+};
+
+const reducer = (state = defaultState, action) => {
+  switch (action.type) {
+    case types.init:
+      return defaultState;
+    case types.changeValue:
+      return assign({}, state, {
+        [action.key]: action.value
+      });
+      <% template.interfaces.forEach(i => { _%>
+        <%_ let name = i.name.replace(/^get/i, '').replace(/^(\w)/, w => w.toLowerCase()) _%>
+        case types.<%= i.name %>:
+          return assign({}, state, {
+            tableLoading: true
+          });
+        case types.<%= i.name %>Success:
+          return assign({}, state, {
+            <%= name %>: action.data,
+            tableLoading: false
+          });
+          case types.<%= i.name %>Failed:
+            return assign({}, state, {
+              tableLoading: false
+            });
+      <%_ }) _%>
+    default:
+      return state;
+  }
+};
+
+export default reducer;
