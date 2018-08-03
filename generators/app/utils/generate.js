@@ -63,6 +63,12 @@ module.exports = async function() {
       'reducer.ejs',
       path.join(this.config.subDirectoryPath, 'reducer.js'),
       this.config
+    ),
+    generate.call(
+      this,
+      'action.ejs',
+      path.join(this.config.subDirectoryPath, 'action.js'),
+      this.config
     )
   ]);
 };

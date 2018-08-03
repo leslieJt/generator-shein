@@ -1,0 +1,20 @@
+import * as types from './types';
+import { makeActionCreator } from 'lib/dealFunc';
+<%_
+  if (!template.interfaces) template.interfaces = [];
+_%>
+
+export const init = makeActionCreator(types.init);
+export const changeValue = makeActionCreator(types.changeValue, 'key', 'value');
+
+<% template.interfaces.forEach(i => { _%>
+export const <%= i.name %> = makeActionCreator(types.<%= i.name %><% if (i.keys && i.keys.length) { %>, 'filter'<% } %>);
+export const <%= i.name %>Success = makeActionCreator(
+  types.<%= i.name %>Success,
+  'data'
+);
+export const <%= i.name %>Failed = makeActionCreator(
+  types.<%= i.name %>Failed,
+  'error'
+);
+<%_ }) _%>
