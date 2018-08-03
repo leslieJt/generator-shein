@@ -1,0 +1,35 @@
+{
+  name: '补扣款明细查询', // optional
+  username: 'jt', // optional
+  inputs: [
+    {
+      name: '提报日期', // required
+      field: 'payTimeStart', // optional
+      description: '补扣款单提报日期', // optional
+      type: 'date', // optional enum: ['date', 'text', 'month', 'number', 'enum'], text is default
+      enums: [],
+      isRequired: true, // optional enum: [true, false], false is default
+      default: '', // optional, undefined is default
+    }
+  ],
+  ouputs: [
+    {
+      list: [
+        {
+          name: '补扣款单号', // required
+          description: '补扣款单号', // optional
+          type: 'text', // optional
+          isLink: true, // optional enum: [true, '/to/what/your/want/to/go'], false is default
+        }
+      ],
+      isPagination: true // optional, default is true
+    }
+  ],
+  interfaces: [ // optional
+    {
+      name: 'getAllExrate', // required
+      url: '/currency/getAllCurrencyList', // required
+      keys: [] // optional
+    }
+  ]
+}
