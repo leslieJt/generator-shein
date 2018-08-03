@@ -1,6 +1,9 @@
 import { message } from 'antd';
 import { call, put, takeLatest } from 'redux-saga/effects';
 import * as types from './types';
+<%_
+  if (!template.interfaces) template.interfaces = [];
+_%>
 import {
   <% template.interfaces.forEach(i => { _%>
     <%= i.name %>Success, <%= i.name %>Failed,

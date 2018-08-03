@@ -46,6 +46,17 @@ module.exports = async function() {
       skipEjs: true,
       skipPrettier: true
     }),
-    generate.call(this, 'saga.ejs', path.join(this.config.subDirectoryPath, 'saga.js'), this.config)
+    generate.call(
+      this,
+      'saga.ejs',
+      path.join(this.config.subDirectoryPath, 'saga.js'),
+      this.config
+    ),
+    generate.call(
+      this,
+      'types.ejs',
+      path.join(this.config.subDirectoryPath, 'types.js'),
+      this.config
+    )
   ]);
 };

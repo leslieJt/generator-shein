@@ -1,0 +1,9 @@
+export let init;
+export let changeValue;
+<%_
+  if (!template.interfaces) template.interfaces = [];
+_%>
+<% template.interfaces.forEach((i) => { _%>
+export let <%= i.name %>Success;
+export let <%= i.name %>Failed;
+<% }) %>
