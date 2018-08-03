@@ -12,9 +12,13 @@ import {
   <%_ }) _%>
  } from '../server';
 
-<% template.interfaces.forEach(i => { _%>
-function* <%= i.name %>Saga() {
-  const data = yield call(<%= i.name %>);
+<% template.interfaces.forEach(i => { %>
+function* <%= i.name %>Saga(
+  <% if (i.keys && i.keys.length) { _%>
+    action
+  <%_ } _%>
+  ) {
+  const data = yield call(<%= i.name %><% if (i.keys && i.keys.length) { _%> ,action.filter <%_ } _%>);
 
   if (data.error) {
     message.error(data.error);
