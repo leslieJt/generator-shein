@@ -26,7 +26,7 @@ const generate = async function(tpl, p, data, config = { skipEjs: false, skipPre
     content = await renderFile(this.templatePath(tpl), data);
   }
 
-  if (!config.skipPrettier && isPrettierSupport(tpl)) {
+  if (!config.skipPrettier && isPrettierSupport(p)) {
     content = prettier.format(content, prettierConfig);
   }
 
@@ -41,10 +41,11 @@ module.exports = async function() {
   await prepare(this.config.routerPath, this.config.subDirectoryPath);
 
   await Promise.all([
-    generate.call(this, 'server.js', path.join(this.config.routerPath, 'server.js'), this.config),
+    generate.call(this, 'server.ejs', path.join(this.config.routerPath, 'server.js'), this.config),
     generate.call(this, 'me.json', path.join(this.config.subDirectoryPath, 'me.json'), null, {
       skipEjs: true,
       skipPrettier: true
-    })
+    }),
+    generate.call(this, 'saga.ejs', path.join(this.config.subDirectoryPath, 'saga.js'), this.config)
   ]);
 };

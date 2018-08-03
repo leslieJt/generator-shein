@@ -1,0 +1,34 @@
+import { message } from 'antd';
+import { call, put, takeLatest } from 'redux-saga/effects';
+import * as types from './types';
+import {
+  <% template.interfaces.forEach(i => { _%>
+    <%= i.name %>Success, <%= i.name %>Failed,
+  <%_ }) _%>
+ } from './action';
+import {
+  <% template.interfaces.forEach(i => { _%>
+    <%= i.name %>,
+  <%_ }) _%>
+ } from '../server';
+
+<% template.interfaces.forEach(i => { _%>
+function* <%= i.name %>Saga() {
+  const data = yield call(<%= i.name %>);
+
+  if (data.error) {
+    message.error(data.error);
+    yield put(<%= i.name %>Failed(data.error));
+  } else {
+    yield put(<%= i.name %>Success(data.data));
+  }
+}
+<%_ }) _%>
+
+function* mainSaga() {
+  <% template.interfaces.forEach(i => { _%>
+    yield takeLatest(types.<%= i.name %>, <%= i.name %>Saga);
+  <%_ }) _%>
+}
+
+export default mainSaga;
