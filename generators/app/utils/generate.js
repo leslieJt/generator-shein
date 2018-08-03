@@ -5,6 +5,7 @@ const path = require('path');
 const { promisify } = require('util');
 const prepare = require('./prepare');
 const writeFile = promisify(fs.writeFile);
+const readFile = promisify(fs.readFile);
 const chalk = require('chalk');
 
 const prettierConfig = {
@@ -17,10 +18,15 @@ const prettierSupportLanguages = ['.js', '.css', '.json'];
 
 const isPrettierSupport = fileName => prettierSupportLanguages.find(l => fileName.endsWith(l));
 
-const generate = async function(tpl, p, config) {
-  let content = await renderFile(this.templatePath(tpl), config);
+const generate = async function(tpl, p, data, config = { skipEjs: false, skipPrettier: false }) {
+  let content;
+  if (config.skipEjs) {
+    content = await readFile(this.templatePath(tpl), 'utf8');
+  } else {
+    content = await renderFile(this.templatePath(tpl), data);
+  }
 
-  if (isPrettierSupport(tpl)) {
+  if (!config.skipPrettier && isPrettierSupport(tpl)) {
     content = prettier.format(content, prettierConfig);
   }
 
@@ -34,10 +40,11 @@ const generate = async function(tpl, p, config) {
 module.exports = async function() {
   await prepare(this.config.routerPath, this.config.subDirectoryPath);
 
-  await generate.call(
-    this,
-    'server.js',
-    path.join(this.config.routerPath, 'server.js'),
-    this.config
-  );
+  await Promise.all([
+    generate.call(this, 'server.js', path.join(this.config.routerPath, 'server.js'), this.config),
+    generate.call(this, 'me.json', path.join(this.config.subDirectoryPath, 'me.json'), null, {
+      skipEjs: true,
+      skipPrettier: true
+    })
+  ]);
 };

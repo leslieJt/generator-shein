@@ -63,7 +63,7 @@ module.exports = class extends Generator {
       message: '请输入您要生成的子文件夹名',
       default: 'list'
     });
-    const subDirectoryPath = path.relative(routerPath, subDirectory);
+    const subDirectoryPath = path.resolve(routerPath, subDirectory);
 
     this.config = { root, templatePath, routerName, routerPath, subDirectory, subDirectoryPath };
   }
