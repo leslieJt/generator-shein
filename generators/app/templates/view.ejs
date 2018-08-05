@@ -1,0 +1,78 @@
+<%_
+const className = `${_.upperFirst(routerName)}${_.upperFirst(subDirectory)}`;
+const d = new Date();
+const now = `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
+_%>
+/**
+<% if (template.name) { _%>
+ * <%= template.name %>
+<%_ } _%>
+ * Created by <%= template.username || require('os').userInfo().username %> on <%= now %>
+ */
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+// import { } from 'react-router-redux';
+import { Button, Table, Modal, Select, message } from 'antd';
+import { renderText, renderNumber } from 'lib/render';
+import moment from 'moment';
+
+import { init, changeQueryParams } from './action';
+<% if (template.output.isPagination) { _%>
+import Pagination from '../../publicComponent/pagination';
+<%_ } _%>
+import Filters from './jsx/filters';
+import TableView from './jsx/tableView';
+import styles from './style.css';
+
+class <%= className %> extends Component {
+  constructor(props) {
+    super(props);
+    const { dispatch } = this.props;
+
+    dispatch(init());
+    // todo
+  }
+
+  render() {
+    const {
+      <% if (template.output.isPagination) { %>total,<% } %>
+      dispatch,
+      sheetItems,
+      tableLoading
+    } = this.props;
+
+    return (
+      <div>
+        <Filters {...this.props} />
+        <div style={{ margin: '0 15px' }}>
+          <TableView {...this.props} />
+          <%_ if (template.output.isPagination) { _%>
+          <Pagination
+            defaultPageSize={sheetItems.pageSize}
+            total={total}
+            current={sheetItems.pageNumber}
+            onChange={(pageNumber, pageSize) => {
+              dispatch(changeQueryParams('pageNumber', pageNumber));
+              dispatch(changeQueryParams('pageSize', pageSize));
+            }}
+            onShowSizeChange={(pageNumber, pageSize) => {
+              dispatch(changeQueryParams('pageNumber', pageNumber));
+              dispatch(changeQueryParams('pageSize', pageSize));
+            }}
+          />
+          <%_ } _%>
+        </div>
+      </div>
+    );
+  }
+}
+
+<%= className %>.propTypes = {
+  <%_ if (template.output.isPagination) { _%>total: PropTypes.number.isRequired,<%_ } _%>
+  dispatch: PropTypes.func.isRequired,
+  tableLoading: PropTypes.bool.isRequired
+};
+
+const mapStateToProps = state => state['<%= routerName %>/<%= subDirectory %>'];
+export default connect(mapStateToProps)(<%= className %>);

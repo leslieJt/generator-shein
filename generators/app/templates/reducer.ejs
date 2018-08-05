@@ -25,6 +25,12 @@ const reducer = (state = defaultState, action) => {
       return assign({}, state, {
         [action.key]: action.value
       });
+    case types.changeQueryParams:
+      return assign({}, state, {
+        sheetItems: assign({}, state.sheetItems, {
+          [action.key]: action.value
+        })
+      });
       <% template.interfaces.forEach(i => { _%>
         <%_ let name = i.name.replace(/^get/i, '').replace(/^(\w)/, w => w.toLowerCase()) _%>
         case types.<%= i.name %>:

@@ -7,6 +7,7 @@ const prepare = require('./prepare');
 const writeFile = promisify(fs.writeFile);
 const readFile = promisify(fs.readFile);
 const chalk = require('chalk');
+const _ = require('lodash');
 
 const prettierConfig = {
   parser: 'babylon',
@@ -14,7 +15,7 @@ const prettierConfig = {
   printWidth: 100
 };
 
-const prettierSupportLanguages = ['.js', '.css', '.json'];
+const prettierSupportLanguages = ['.js', '.css', '.json', '.jsx'];
 
 const isPrettierSupport = fileName => prettierSupportLanguages.find(l => fileName.endsWith(l));
 
@@ -31,44 +32,33 @@ const generate = async function(tpl, p, data, config = { skipEjs: false, skipPre
   }
 
   await writeFile(p, content);
-  this.log(`${chalk.green('Created: ')}${tpl}`);
+  this.log(`${chalk.green('Created: ')}${path.basename(p)}`);
 };
 
 /**
  * Generate file from config
  */
 module.exports = async function() {
-  await prepare(this.config.routerPath, this.config.subDirectoryPath);
+  await prepare(this.config.routerPath, this.config.subDirectoryPath, this.config.jsxPath);
+
+  this.config._ = _; // add lodash support
+
+  const g = generate.bind(this);
+  const s = n => path.join(this.config.subDirectoryPath, n);
+  const x = n => path.join(this.config.jsxPath, n);
 
   await Promise.all([
-    generate.call(this, 'server.ejs', path.join(this.config.routerPath, 'server.js'), this.config),
-    generate.call(this, 'me.json', path.join(this.config.subDirectoryPath, 'me.json'), null, {
+    g('me.json', s('me.json'), null, {
       skipEjs: true,
       skipPrettier: true
     }),
-    generate.call(
-      this,
-      'saga.ejs',
-      path.join(this.config.subDirectoryPath, 'saga.js'),
-      this.config
-    ),
-    generate.call(
-      this,
-      'types.ejs',
-      path.join(this.config.subDirectoryPath, 'types.js'),
-      this.config
-    ),
-    generate.call(
-      this,
-      'reducer.ejs',
-      path.join(this.config.subDirectoryPath, 'reducer.js'),
-      this.config
-    ),
-    generate.call(
-      this,
-      'action.ejs',
-      path.join(this.config.subDirectoryPath, 'action.js'),
-      this.config
-    )
+    g('server.ejs', s('server.js'), this.config),
+    g('saga.ejs', s('saga.js'), this.config),
+    g('types.ejs', s('types.js'), this.config),
+    g('reducer.ejs', s('reducer.js'), this.config),
+    g('action.ejs', s('action.js'), this.config),
+    g('view.ejs', s('view.jsx'), this.config),
+    g('filters.ejs', x('filters.jsx'), this.config),
+    g('tableView.ejs', x('tableView.jsx'), this.config)
   ]);
 };

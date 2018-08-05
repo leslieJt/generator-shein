@@ -6,6 +6,7 @@ _%>
 
 export const init = makeActionCreator(types.init);
 export const changeValue = makeActionCreator(types.changeValue, 'key', 'value');
+export const changeQueryParams = makeActionCreator(types.changeQueryParams, 'key', 'value');
 
 <% template.interfaces.forEach(i => { _%>
 export const <%= i.name %> = makeActionCreator(types.<%= i.name %><% if (i.keys && i.keys.length) { %>, 'filter'<% } %>);

@@ -1,0 +1,55 @@
+<%
+if (!template.output) { template.output = {};}
+%>
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Table } from 'antd';
+<%_
+const list = template.output.list;
+
+if (list && list.length && list.some(l => l.isLink)) {
+_%>
+import { Link } from 'react-router';
+<%_ } _%>
+import { renderText, renderNumber } from 'lib/render';
+
+const TableView = ({ dataSource, tableLoading }) => (
+  <Table
+    rowKey="id"
+    pagination={false}
+    dataSource={dataSource}
+    loading={tableLoading}
+    scroll={{ x: 2000, y: window.innerHeight - 300 }}
+    columns={[
+      <% if (template.output.list && template.output.list.length) { %>
+        <% template.output.list.forEach(i => { %>
+        {
+          title: '<%= i.name %>',
+          dataIndex: '<%= i.field %>',
+          width: 100,
+          render:
+            <% if (i.isLink) { %>
+              (text, record) => <Link <%= typeof i.isLink === 'string' ? `to={${i.isLink}}` : '' %>>{text}</Link>
+            <% } else { %>
+              renderText
+            <% } %>
+        },
+        <% }) %>
+      <% } else { %>
+        {
+          title: '',
+          dataIndex: '',
+          width: 100,
+          render: renderText
+        }
+      <% } %>
+    ]}
+  />
+);
+
+TableView.propTypes = {
+  dataSource: PropTypes.shape({}).isRequired,
+  tableLoading: PropTypes.bool.isRequired
+};
+
+export default TableView;
