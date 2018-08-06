@@ -22,7 +22,7 @@ const TableView = ({ dataSource, tableLoading }) => (
     scroll={{ x: 2000, y: window.innerHeight - 300 }}
     columns={[
       <% if (template.output.list && template.output.list.length) { %>
-        <% template.output.list.forEach(i => { %>
+        <% template.output.list.forEach(i => { _%>
         {
           title: '<%= i.name %>',
           dataIndex: '<%= i.field %>',
@@ -34,7 +34,7 @@ const TableView = ({ dataSource, tableLoading }) => (
               renderText
             <% } %>
         },
-        <% }) %>
+        <% }) _%>
       <% } else { %>
         {
           title: '',
