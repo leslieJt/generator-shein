@@ -1,9 +1,11 @@
 export let init;
 export let changeValue;
+export let changeQueryParams;
 <%_
   if (!template.interfaces) template.interfaces = [];
 _%>
 <% template.interfaces.forEach((i) => { _%>
+export let <%= i.name %>;
 export let <%= i.name %>Success;
 export let <%= i.name %>Failed;
 <% }) %>

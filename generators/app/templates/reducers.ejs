@@ -1,8 +1,10 @@
 import assign from 'object-assign';
 import * as types from './types';
-// import moment from 'moment';
+import moment from 'moment';
+
 <%_
-  if (!template.interfaces) template.interfaces = [];
+  if (!template.interfaces) { template.interfaces = []; }
+  if (!template.inputs) { template.inputs = []; }
 _%>
 
 export const defaultState = {
@@ -10,7 +12,16 @@ export const defaultState = {
   total: 0,
   sheetItems: {
     pageNumber: 1,
-    pageSize: 20
+    pageSize: 20,
+    <% template.inputs.forEach(i => { _%>
+      <% if (i.field.match(/,/)) { _%>
+        <%_ const fields = i.field.replace(/ /g, '').split(',') _%>
+        <%= fields[0]%>: moment(Date.now()).format('YYYY-MM-DD 00:00:00'),
+        <%= fields[1]%>: moment(Date.now()).format('YYYY-MM-DD 23:59:59'),
+      <%_ } else { _%>
+        <%= i.field %>: undefined,
+      <% } _%>
+    <% }) _%>
   },
   <% template.interfaces.forEach(i => { _%>
     <%= i.name.replace(/^get/i, '').replace(/^(\w)/, w => w.toLowerCase()) %>: undefined,

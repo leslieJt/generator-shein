@@ -1,5 +1,5 @@
 <%_
-const className = `${_.upperFirst(routerName)}${_.upperFirst(subDirectory)}`;
+const className = `${_.upperFirst(_.camelCase(routerName))}${_.upperFirst(subDirectory)}`;
 const d = new Date();
 const now = `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
 _%>
@@ -38,8 +38,7 @@ class <%= className %> extends Component {
     const {
       <% if (template.output.isPagination) { %>total,<% } %>
       dispatch,
-      sheetItems,
-      tableLoading
+      sheetItems
     } = this.props;
 
     return (
@@ -70,8 +69,7 @@ class <%= className %> extends Component {
 
 <%= className %>.propTypes = {
   <%_ if (template.output.isPagination) { _%>total: PropTypes.number.isRequired,<%_ } _%>
-  dispatch: PropTypes.func.isRequired,
-  tableLoading: PropTypes.bool.isRequired
+  dispatch: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => state['<%= routerName %>/<%= subDirectory %>'];

@@ -1,18 +1,24 @@
+<%_
+ if (!template.inputs) { template.inputs = []; }
+ _%>
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Form, Input, Button, Select, DatePicker, message } from 'antd';
+import { Form, Input, Button, Select, DatePicker, message,
+<%= template.inputs.some(i => i.type === 'number') ? 'InputNumber' : '' %> } from 'antd';
 import moment from 'moment';
 // import { push } from 'react-router-redux';
 
-import { query } from './action';
-import styles from './style.css';
-
-const { Option } = Select;
-const { MonthPicker } = DatePicker;
+import { changeQueryParams } from '../action';
+import styles from '../style.css';
 
 class Filters extends Component {
   filterOption = (input, option) =>
     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+
+  // disabledDate = current => {
+  //   const { payTimeStart } = this.props.sheetItems;
+  //   return current && current.valueOf() < moment(payTimeStart).valueOf();
+  // };
 
   handleSubmit = evt => {
     evt.preventDefault();
@@ -30,6 +36,75 @@ class Filters extends Component {
     return (
       <div style={{ marginBottom: '20px' }}>
         <Form onSubmit={this.handleSubmit}>
+          <div className={styles.rowSpace}>
+            <% template.inputs.forEach(i => { %>
+            <div className={styles.rowSpaceList}>
+              <%= i.isRequired ? "<i style={{ color: 'red' }}>*</i>" : '' %><span className={styles.filterName}><%= i.name %></span>
+              <% if (i.type === 'enum') { %>
+              <Select
+                allowClear="true"
+                showSearch
+                className={styles.colSpace}
+                onChange={val => dispatch(changeQueryParams('<%= i.field %>', val))}
+              filterOption={this.filterOption}
+              >
+              {/*{.map(item => <Option key={item.}>{item.}</Option>)}*/}
+              </Select>
+              <% } else if (i.type === 'number') { %>
+              <InputNumber
+                className={styles.colSpace}
+                value={sheetItems.<%= i.field %>}
+                onChange={e => dispatch(changeQueryParams('<%= i.field %>', e.target.value.trim()))}
+              />
+              <% } else if (i.type === 'date') { %>
+                <% if (i.field.match(/,/)) { %>
+                  <% const fields = i.field.replace(/ /g, '').split(',') %>
+                  <DatePicker
+                    showTime
+                    style={{ width: '180px' }}
+                    allowClear={false}
+                    format="YYYY-MM-DD HH:mm:ss"
+                    value={moment(sheetItems.<%= fields[0] %>, 'YYYY-MM-DD HH:mm:ss')}
+                    onChange={(value, str) => dispatch(changeQueryParams('<%= fields[0] %>', str))}
+                  />
+                  &nbsp; - &nbsp;
+                  <DatePicker
+                    showTime
+                    style={{ width: '180px' }}
+                    allowClear={false}
+                    disabledDate={cur => this.disabledDate(cur)}
+                    format="YYYY-MM-DD HH:mm:ss"
+                    value={moment(sheetItems.<%= fields[1] %>, 'YYYY-MM-DD HH:mm:ss')}
+                    onChange={(value, str) => dispatch(changeQueryParams('<%= fields[1] %>', str))}
+                  />
+                <% } else { %>
+                <DatePicker
+                  showTime
+                  style={{ width: '180px' }}
+                  allowClear={false}
+                  format="YYYY-MM-DD HH:mm:ss"
+                  value={moment(sheetItems.<%= i.field %>, 'YYYY-MM-DD HH:mm:ss')}
+                  onChange={(value, str) => dispatch(changeQueryParams('<%= i.field %>', str))}
+                />
+                <% } %>
+              <% } else if (i.type === 'month') { %>
+              <MonthPicker
+                style={{ width: '180px' }}
+                allowClear={false}
+                format="YYYY-MM"
+                value={moment(sheetItems.<%= i.field %>, 'YYYY-MM-01 00:00:00')}
+                onChange={value => dispatch(changeQueryParams('<%= i.field %>', value.format('YYYY-MM-01 00:00:00')))}
+              />
+              <% } else { %>
+              <Input
+                className={styles.colSpace}
+                value={sheetItems.<%= i.field %>}
+                onChange={e => dispatch(changeQueryParams('<%= i.field %>', e.target.value.trim()))}
+              />
+              <% } %>
+            </div>
+            <% }) %>
+          </div>
         </Form>
       </div>
     );

@@ -8,7 +8,7 @@ import { encodeQuery } from 'lib/query-string';
 <% if (template.interfaces) { %>
   const <%= subDirectory %> = {
     <%_ template.interfaces.filter(i => !/\$\{(\w+)\}/.test(i.url)).forEach(i => { _%>
-     <%= i.name %>: '<%= i.url %>',
+     <%= i.name %>: '<%= i.url %>', <%= i.description ? `// ${i.description}` : '' %>
     <%_ }) _%>
   }
 
@@ -17,9 +17,9 @@ import { encodeQuery } from 'lib/query-string';
     <% if (i.keys && i.keys.length) { %>
       filter => {
         const keys = [
-          <% i.keys.forEach(k => { %>
+          <% i.keys.forEach(k => { _%>
           '<%= k %>',
-          <% }) %>
+          <% }) _%>
         ];
         return fetch(`${<%= subDirectory + '.' + i.name %>}?${encodeQuery(keys, filter)}`, {
           method: 'get'

@@ -54,12 +54,13 @@ module.exports = async function() {
       skipPrettier: true
     }),
     g('style.css', s('style.css'), null, {
-      skipEjs: true
+      skipEjs: true,
+      skipPrettier: true
     }),
     g('server.ejs', r('server.js'), this.config),
     g('saga.ejs', s('saga.js'), this.config),
     g('types.ejs', s('types.js'), this.config),
-    g('reducer.ejs', s('reducer.js'), this.config),
+    g('reducers.ejs', s('reducers.js'), this.config),
     g('action.ejs', s('action.js'), this.config),
     g('view.ejs', s('view.jsx'), this.config),
     g('filters.ejs', x('filters.jsx'), this.config),

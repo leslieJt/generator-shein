@@ -9,7 +9,7 @@ const list = template.output.list;
 
 if (list && list.length && list.some(l => l.isLink)) {
 _%>
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 <%_ } _%>
 import { renderText, renderNumber } from 'lib/render';
 
