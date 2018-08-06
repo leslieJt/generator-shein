@@ -45,6 +45,7 @@ module.exports = async function() {
 
   const g = generate.bind(this);
   const s = n => path.join(this.config.subDirectoryPath, n);
+  const r = n => path.join(this.config.routerPath, n);
   const x = n => path.join(this.config.jsxPath, n);
 
   await Promise.all([
@@ -52,7 +53,10 @@ module.exports = async function() {
       skipEjs: true,
       skipPrettier: true
     }),
-    g('server.ejs', s('server.js'), this.config),
+    g('style.css', s('style.css'), null, {
+      skipEjs: true
+    }),
+    g('server.ejs', r('server.js'), this.config),
     g('saga.ejs', s('saga.js'), this.config),
     g('types.ejs', s('types.js'), this.config),
     g('reducer.ejs', s('reducer.js'), this.config),

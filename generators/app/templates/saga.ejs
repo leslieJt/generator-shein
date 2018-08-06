@@ -2,6 +2,7 @@ import { message } from 'antd';
 import { call, put, takeLatest } from 'redux-saga/effects';
 import * as types from './types';
 <%_
+  const regx = /\$\{(\w+)\}/;
   if (!template.interfaces) template.interfaces = [];
 _%>
 import {
@@ -17,11 +18,11 @@ import {
 
 <% template.interfaces.forEach(i => { %>
 function* <%= i.name %>Saga(
-  <% if (i.keys && i.keys.length) { _%>
+  <% if (i.keys && i.keys.length || regx.test(i.url)) { _%>
     action
   <%_ } _%>
   ) {
-  const data = yield call(<%= i.name %><% if (i.keys && i.keys.length) { _%> ,action.filter <%_ } _%>);
+  const data = yield call(<%= i.name %><% if (i.keys && i.keys.length) { _%> ,action.filter <%_ } else if (regx.test(i.url)) { _%>, action.<%= i.url.match(regx)[1] %><%_ } _%>);
 
   if (data.error) {
     message.error(data.error);

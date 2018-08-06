@@ -1,18 +1,20 @@
 <% if (template.interfaces && template.interfaces.length === 1) { _%>
 /* eslint-disable import/prefer-default-export */
 <%_ } _%>
+<%_ const regx = /\$\{(\w+)\}/; _%>
 import fetch from 'lib/fetch';
 import { encodeQuery } from 'lib/query-string';
 
 <% if (template.interfaces) { %>
   const <%= subDirectory %> = {
-    <%_ template.interfaces.forEach(i => { _%>
+    <%_ template.interfaces.filter(i => !/\$\{(\w+)\}/.test(i.url)).forEach(i => { _%>
      <%= i.name %>: '<%= i.url %>',
     <%_ }) _%>
   }
 
   <% template.interfaces.forEach(i => { %>
-    export const <%= i.name %> = <% if (i.keys && i.keys.length) { %>
+    export const <%= i.name %> =
+    <% if (i.keys && i.keys.length) { %>
       filter => {
         const keys = [
           <% i.keys.forEach(k => { %>
@@ -23,6 +25,12 @@ import { encodeQuery } from 'lib/query-string';
           method: 'get'
         });
       }
+    <% } else if (regx.test(i.url)) { %>
+      <%_ const params = i.url.match(regx)[1]; _%>
+      <%= params %> =>
+        fetch(`<%= i.url %>`, {
+          method: 'get'
+        });
     <% } else { %>
       () =>
           fetch(`${<%= subDirectory + '.' + i.name %>}`, {

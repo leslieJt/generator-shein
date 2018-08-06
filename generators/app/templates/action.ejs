@@ -1,6 +1,7 @@
 import * as types from './types';
 import { makeActionCreator } from 'lib/dealFunc';
 <%_
+  const regx = /\$\{(\w+)\}/;
   if (!template.interfaces) template.interfaces = [];
 _%>
 
@@ -9,7 +10,7 @@ export const changeValue = makeActionCreator(types.changeValue, 'key', 'value');
 export const changeQueryParams = makeActionCreator(types.changeQueryParams, 'key', 'value');
 
 <% template.interfaces.forEach(i => { _%>
-export const <%= i.name %> = makeActionCreator(types.<%= i.name %><% if (i.keys && i.keys.length) { %>, 'filter'<% } %>);
+export const <%= i.name %> = makeActionCreator(types.<%= i.name %><% if (i.keys && i.keys.length) { %>, 'filter'<% } else if (regx.test(i.url)) { %>, '<%= i.url.match(regx)[1] %>'<%_ } _%>);
 export const <%= i.name %>Success = makeActionCreator(
   types.<%= i.name %>Success,
   'data'
